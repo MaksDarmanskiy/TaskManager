@@ -135,9 +135,8 @@ export default function GlobalSearch() {
                     {res.type === 'project' ? <FolderOpen /> : <Assignment />}
                   </Box>
                   <ListItemText 
-                    primary={res.item.title} 
+                    primary={<Typography sx={{ fontWeight: 600 }}>{res.item.title}</Typography>} 
                     secondary={res.type === 'task' ? `Проєкт: ${(res as any).projectName}` : 'Перейти до проєкту'} 
-                    primaryTypographyProps={{ sx: { fontWeight: 600 } }}
                   />
                   <Chip size="small" label={res.type === 'project' ? 'Проєкт' : 'Задача'} sx={{ ml: 2, bgcolor: '#f0f0f3' }} />
                 </ListItemButton>
