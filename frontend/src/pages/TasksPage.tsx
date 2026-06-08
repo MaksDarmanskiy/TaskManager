@@ -177,7 +177,7 @@ export default function TasksPage() {
   const handleStatusChange = (task: Task, newStatus: TaskStatus) => {
     updateMutation.mutate({
       taskId: task.id,
-      data: { status: newStatus },
+      data: { status: newStatus } as any,
     });
   };
 
@@ -191,8 +191,8 @@ export default function TasksPage() {
         <IconButton onClick={() => navigate('/projects')} sx={{ border: '1px solid #f0f0f3' }}>
           <ArrowBack />
         </IconButton>
-        <Box flexGrow={1}>
-          <Typography variant="h4" fontWeight={700}>Задачі проєкту</Typography>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Задачі проєкту</Typography>
         </Box>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
           Нова задача
@@ -204,7 +204,7 @@ export default function TasksPage() {
           const columnTasks = tasks.filter(t => t.status === status);
           return (
             <Box key={status}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 {STATUS_LABELS[status]}
                 <Chip label={columnTasks.length} size="small" sx={{ bgcolor: '#f0f0f3' }} />
               </Typography>
@@ -214,7 +214,7 @@ export default function TasksPage() {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Checkbox size="small" sx={{ p: 0 }} checked={selectedTasks.includes(task.id)} onChange={() => toggleSelectTask(task.id)} />
-                        <Typography fontWeight={600}>{task.title}</Typography>
+                        <Typography sx={{ fontWeight: 600 }}>{task.title}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', flexWrap: 'nowrap', ml: 1, flexShrink: 0 }}>
                         <IconButton size="small" onClick={() => handleOpen(task)}><Edit fontSize="small" /></IconButton>
@@ -267,7 +267,7 @@ export default function TasksPage() {
           <TextField fullWidth label="Назва *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} sx={{ mb: 3 }} autoFocus />
           
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'flex-end' }}>
-            <Typography variant="body2" fontWeight={600} color="text.secondary">Опис (Markdown підтримується)</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Опис (Markdown підтримується)</Typography>
             <Button size="small" onClick={() => setPreviewMode(!previewMode)} sx={{ textTransform: 'none', py: 0 }}>
               {previewMode ? 'Редагувати' : 'Попередній перегляд'}
             </Button>
@@ -299,7 +299,7 @@ export default function TasksPage() {
             </FormControl>
           </Box>
           <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight={600} sx={{ mb: 1 }}>Дедлайн</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1 }}>Дедлайн</Typography>
             <TextField fullWidth type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
           </Box>
         </DialogContent>
@@ -318,7 +318,7 @@ export default function TasksPage() {
           px: 3, py: 2, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 3,
           bgcolor: '#171717', color: '#ffffff', zIndex: 1000
         }}>
-          <Typography fontWeight={600}>Обрано: {selectedTasks.length}</Typography>
+          <Typography sx={{ fontWeight: 600 }}>Обрано: {selectedTasks.length}</Typography>
           
           <Box sx={{ borderLeft: '1px solid #404040', height: 24 }} />
           

@@ -7,7 +7,7 @@ export default function ProfilePage() {
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto' }}>
-      <Typography variant="h4" fontWeight={700} sx={{ mb: 4 }}>Профіль</Typography>
+      <Typography variant="h4" sx={{ fontWeight: 700, mb: 4 }}>Профіль</Typography>
 
       <Card sx={{ borderRadius: 3, border: '1px solid #f0f0f3', boxShadow: 'none' }}>
         <CardContent sx={{ p: 4 }}>
@@ -16,7 +16,7 @@ export default function ProfilePage() {
               {(user?.signInDetails?.loginId || 'U')[0].toUpperCase()}
             </Avatar>
             <Box>
-              <Typography variant="h5" fontWeight={600}>Користувач</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>Користувач</Typography>
               <Typography color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                 <Email fontSize="small" />
                 {user?.signInDetails?.loginId}
@@ -27,7 +27,7 @@ export default function ProfilePage() {
           <Divider sx={{ borderColor: '#f0f0f3' }} />
 
           <Box sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Деталі акаунту</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Деталі акаунту</Typography>
             <Box sx={{ display: 'grid', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <VpnKey color="action" />

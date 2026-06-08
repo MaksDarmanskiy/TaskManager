@@ -70,7 +70,7 @@ export default function ProjectsPage() {
   return (
     <Box>
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" fontWeight={700}>Проєкти</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>Проєкти</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
           Новий проєкт
         </Button>
@@ -81,7 +81,7 @@ export default function ProjectsPage() {
           <Box sx={{ gridColumn: '1 / -1', py: 8, textAlign: 'center' }}>
             <FolderOpen sx={{ fontSize: 64, color: '#dcdee0', mb: 2 }} />
             <Typography variant="h6" color="text.secondary">Ще немає проєктів</Typography>
-            <Typography variant="body2" color="text.secondary" mb={3}>Створи перший проєкт щоб почати</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Створи перший проєкт щоб почати</Typography>
             <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>Створити проєкт</Button>
           </Box>
         ) : (
@@ -107,8 +107,8 @@ export default function ProjectsPage() {
                       </Tooltip>
                     </Box>
                   </Box>
-                  <Typography variant="h6" fontWeight={600} mt={1}>{project.title}</Typography>
-                  <Typography variant="body2" color="text.secondary" mt={0.5} sx={{ minHeight: 40 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mt: 1 }}>{project.title}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, minHeight: 40 }}>
                     {project.description || 'Без опису'}
                   </Typography>
                 </CardContent>
@@ -126,14 +126,14 @@ export default function ProjectsPage() {
 
       {/* Діалог створення/редагування */}
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="sm" fullWidth
-        PaperProps={{ sx: { bgcolor: 'background.paper', backgroundImage: 'none' } }}>
+        sx={{ '& .MuiDialog-paper': { bgcolor: 'background.paper', backgroundImage: 'none' } }}>
         <DialogTitle>{editProject ? 'Редагувати проєкт' : 'Новий проєкт'}</DialogTitle>
         <DialogContent sx={{ pt: '16px !important' }}>
           <TextField fullWidth label="Назва *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
             sx={{ mb: 3 }} autoFocus />
           <TextField fullWidth label="Опис" multiline rows={3} value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))} sx={{ mb: 3 }} />
-          <Typography variant="body2" color="text.secondary" fontWeight={600} sx={{ mb: 1.5 }}>Колір проєкту</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1.5 }}>Колір проєкту</Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', pb: 1 }}>
             {PROJECT_COLORS.map(color => (
               <Box key={color} onClick={() => setForm(f => ({ ...f, color }))}

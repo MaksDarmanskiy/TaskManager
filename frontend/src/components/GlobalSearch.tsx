@@ -97,7 +97,7 @@ export default function GlobalSearch() {
         </Typography>
       </Box>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3, position: 'absolute', top: '10%' } }}>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 3, position: 'absolute', top: '10%' } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', px: 3, borderBottom: '1px solid #f0f0f3' }}>
           <Search sx={{ color: 'text.secondary', mr: 2 }} fontSize="medium" />
           <InputBase
@@ -112,13 +112,13 @@ export default function GlobalSearch() {
         
         <Box sx={{ minHeight: 100, maxHeight: 400, overflowY: 'auto', px: 3, py: 2 }}>
           {(isLoading || isSearching) && (
-            <Box display="flex" justifyContent="center" p={4}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
               <CircularProgress size={24} />
             </Box>
           )}
 
           {!(isLoading || isSearching) && debouncedQuery && results.length === 0 && (
-            <Typography color="text.secondary" align="center" py={4}>
+            <Typography color="text.secondary" align="center" sx={{ py: 4 }}>
               Нічого не знайдено
             </Typography>
           )}
@@ -136,8 +136,8 @@ export default function GlobalSearch() {
                   </Box>
                   <ListItemText 
                     primary={res.item.title} 
-                    secondary={res.type === 'task' ? `Проєкт: ${res.projectName}` : 'Перейти до проєкту'} 
-                    primaryTypographyProps={{ fontWeight: 600 }}
+                    secondary={res.type === 'task' ? `Проєкт: ${(res as any).projectName}` : 'Перейти до проєкту'} 
+                    primaryTypographyProps={{ sx: { fontWeight: 600 } }}
                   />
                   <Chip size="small" label={res.type === 'project' ? 'Проєкт' : 'Задача'} sx={{ ml: 2, bgcolor: '#f0f0f3' }} />
                 </ListItemButton>
@@ -146,7 +146,7 @@ export default function GlobalSearch() {
           )}
 
           {!(isLoading || isSearching) && !debouncedQuery && (
-            <Typography color="text.secondary" align="center" py={4} variant="body2">
+            <Typography color="text.secondary" align="center" sx={{ py: 4 }} variant="body2">
               Почніть вводити текст для пошуку
             </Typography>
           )}
