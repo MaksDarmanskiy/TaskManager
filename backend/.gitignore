@@ -1,0 +1,10 @@
+# Залежності
+node_modules/
+.aws-sam/
+*.env.local
+
+# Виходи білду
+.aws-sam/
+
+# Логи
+*.log

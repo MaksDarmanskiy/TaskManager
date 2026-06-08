@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background-color: #ffffff;
+  color: #171717;
+  min-height: 100vh;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #fafafa; }
+::-webkit-scrollbar-thumb { background: #dcdee0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #cccccc; }
+
+/* Smooth transitions */
+* { transition: background-color 0.2s ease, border-color 0.2s ease; }
+
+/* Remove ugly focus outlines from charts (Recharts) */
+svg:focus, path:focus, g:focus, rect:focus {
+  outline: none !important;
+}

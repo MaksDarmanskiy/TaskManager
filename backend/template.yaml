@@ -1,0 +1,277 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Task Manager - Serverless Backend (Diploma Project)
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 128
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TaskManagerTable
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin: "'*'"
+
+Resources:
+  # ──────────────────────────────────────────
+  # DynamoDB Table
+  # ──────────────────────────────────────────
+  TaskManagerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TaskManagerTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+
+  # ──────────────────────────────────────────
+  # Cognito User Pool
+  # ──────────────────────────────────────────
+  TaskManagerUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: TaskManagerUserPool
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: false
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+        - Name: name
+          Required: false
+          Mutable: true
+
+  TaskManagerUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: TaskManagerWebClient
+      UserPoolId: !Ref TaskManagerUserPool
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: false
+      AccessTokenValidity: 24
+      IdTokenValidity: 24
+      RefreshTokenValidity: 30
+
+  # ──────────────────────────────────────────
+  # API Gateway with Cognito Authorizer
+  # ──────────────────────────────────────────
+  TaskManagerApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt TaskManagerUserPool.Arn
+        AddDefaultAuthorizerToCorsPreflight: false
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  # ──────────────────────────────────────────
+  # IAM Role for Lambda
+  # ──────────────────────────────────────────
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:BatchWriteItem
+                Resource: !GetAtt TaskManagerTable.Arn
+
+  # ──────────────────────────────────────────
+  # Projects Lambda Functions
+  # ──────────────────────────────────────────
+  ListProjectsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-ListProjects
+      Handler: src/handlers/projects/list.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects
+            Method: GET
+
+  CreateProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-CreateProject
+      Handler: src/handlers/projects/create.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects
+            Method: POST
+
+  UpdateProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-UpdateProject
+      Handler: src/handlers/projects/update.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}
+            Method: PUT
+
+  DeleteProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-DeleteProject
+      Handler: src/handlers/projects/delete.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}
+            Method: DELETE
+
+  # ──────────────────────────────────────────
+  # Tasks Lambda Functions
+  # ──────────────────────────────────────────
+  ListTasksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-ListTasks
+      Handler: src/handlers/tasks/list.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}/tasks
+            Method: GET
+
+  CreateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-CreateTask
+      Handler: src/handlers/tasks/create.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}/tasks
+            Method: POST
+
+  UpdateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-UpdateTask
+      Handler: src/handlers/tasks/update.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}/tasks/{taskId}
+            Method: PUT
+
+  DeleteTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-DeleteTask
+      Handler: src/handlers/tasks/delete.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /projects/{projectId}/tasks/{taskId}
+            Method: DELETE
+
+  # ──────────────────────────────────────────
+  # Stats Lambda Function
+  # ──────────────────────────────────────────
+  GetStatsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TaskManager-GetStats
+      Handler: src/handlers/stats/get.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskManagerApi
+            Path: /stats
+            Method: GET
+
+# ──────────────────────────────────────────
+# Outputs (важливо для конфігурації фронтенду)
+# ──────────────────────────────────────────
+Outputs:
+  ApiUrl:
+    Description: "API Gateway URL"
+    Value: !Sub "https://${TaskManagerApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+
+  UserPoolId:
+    Description: "Cognito User Pool ID"
+    Value: !Ref TaskManagerUserPool
+
+  UserPoolClientId:
+    Description: "Cognito App Client ID"
+    Value: !Ref TaskManagerUserPoolClient

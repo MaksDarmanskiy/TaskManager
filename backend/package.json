@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Task Manager Serverless Backend - Diploma Project",
+  "main": "index.js",
+  "scripts": {
+    "build": "sam build",
+    "deploy": "sam deploy --guided",
+    "deploy:fast": "sam build && sam deploy",
+    "local": "sam local start-api --env-vars env.local.json",
+    "validate": "sam validate"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "uuid": "^9.0.0"
+  },
+  "keywords": ["aws", "lambda", "serverless", "dynamodb"],
+  "author": "",
+  "license": "ISC"
+}
